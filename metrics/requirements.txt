@@ -1,0 +1,4 @@
+statsmodels
+arch
+tsfresh
+hurst
