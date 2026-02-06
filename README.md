@@ -110,8 +110,8 @@ If you find this work useful for your research, please cite:
 ```bibtex
 @inproceedings{sea_fgt2026,
   title={SEA-FGT: Semantic Expert Augmentation with Frequency-Guided Transformer for Multivariate Time-Series Anomaly Detection},
-  author={Your Name and Co-authors},
-  booktitle={Proceedings of [Conference Name]},
+  author={},
+  booktitle={},
   year={2026}
 }
 
