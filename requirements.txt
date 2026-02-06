@@ -1,0 +1,9 @@
+pytorch 		== 2.7.1
+numpy 		== 1.26.4
+scikit-learn	== 1.2.2
+scipy                        == 1.16.2
+tsaug                       	== 0.2.1
+arch                         == 8.0.0
+statsmodels            	== 0.14.0
+tsfresh                   	== 0.21.1
+hurst                        == 0.0.5

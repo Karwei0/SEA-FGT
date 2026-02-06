@@ -1,98 +1,118 @@
-# SEA-FGT: Semantic Expert Augmentation with Frequency-Guided Transformer
-
-[English](README.md) | [中文说明](README_CN.md)
+Here is the revised English README with the "Main Results" section removed.
 
 ---
 
-SEA-FGT is a **fully positive-sample-based contrastive learning framework** for multivariate time-series anomaly detection.  
-It is designed to address key challenges in real-world industrial systems, including **complex inter-channel dependencies**, **heterogeneous temporal semantics**, and **anomaly-induced frequency-domain perturbations**.
+# SEA-FGT: Frequency-Guided Transformer with Semantic Expert Augmentation
 
-This repository provides the **official PyTorch implementation** of SEA-FGT, including training, evaluation, and visualization code used in our paper.
-
----
-
-## 🔍 Key Features
-
-- **Channel Correlation Exploration (CCE)**  
-  Explicitly captures inter-channel dependencies using frequency-domain coherence analysis.
-
-- **Semantic Expert Augmentation (SEA)**  
-  A Mixture-of-Experts–style augmentation module composed of heterogeneous semantic experts with different temporal inductive biases.
-
-- **Frequency-Guided Transformer (FGT)**  
-  Integrates spectral entropy to adaptively modulate attention towards anomaly-sensitive channels.
-
-- **Positive-only Contrastive Learning**  
-  Eliminates the need for explicit negative sampling, reducing sampling bias and simplifying training.
+This repository provides the official PyTorch implementation of the paper: **"SEA-FGT: Semantic Expert Augmentation with Frequency-Guided Transformer for Multivariate Time-Series Anomaly Detection."**
 
 ---
 
-## 📁 Project Structure
+## 🌟 Overview
 
-```
+**SEA-FGT** is a robust contrastive learning framework designed for multivariate time-series anomaly detection in real-world industrial systems. By leveraging a positive-sample-only strategy, the model effectively addresses three critical challenges:
+
+* **Complex Inter-channel Dependencies:** Explored via the **Channel Correlation Exploration (CCE)** module.
+* **Heterogeneous Temporal Semantics:** Captured through the **Semantic Expert Augmentation (SEA)** module.
+* **Frequency-Domain Perturbations:** Modeled by the **Frequency-Guided Transformer (FGT)** to detect anomalies that are subtle in the time domain but prominent in the spectral domain.
+
+### 📊 Advanced Evaluation Metrics
+
+Beyond traditional point-wise metrics, this framework supports **range-oriented evaluation** to ensure fair and stable performance assessment:
+
+* **Affiliation Metrics:** Affiliation Precision / Recall / F1
+* **Volume Under Surface:** VUS-ROC / VUS-PR
+* **Range-based AUC:** Range-AUC-ROC / Range-AUC-PR
+
+---
+
+## 📂 Repository Structure
+
+```text
 .
-├── datasets/                 # Dataset loaders and preprocessing
-│   ├── PSM/
-│   ├── SMD/
-│   ├── SMAP/
-│   └── SWaT/
-├── layers/                   # Core model components
-│   ├── FGT.py                # Frequency-Guided Transformer
-│   ├── SEA.py                # Semantic Expert Augmentation
-│   ├── CCE.py                # Channel Correlation Exploration
-│   └── ...
-├── models/                   # Full model definitions
-├── scripts/                  # Training and evaluation scripts
-├── outputs/                  # Saved logs and figures
-├── checkpoints/              # Model checkpoints
-├── requirements.txt
-└── README.md
+├── datasets/            # Data loading and pre-processing (PSM, SMD, etc.)
+├── layers/              # Core components (FGT.py, SEA.py, CCE.py)
+├── models/              # Full model architecture definitions
+├── experiments/         # Experiment configurations and hyper-parameters
+├── losses/              # Custom loss functions (Contrastive, Reconstruction)
+├── metrics/             # Implementation of advanced evaluation metrics
+├── scripts/             # Shell scripts for automated training and testing
+├── utils/               # Utility functions (EarlyStopping, Data Scaling)
+├── run.py               # Main entry point for the project
+├── config.py            # Global configurations and path settings
+└── requirements.txt     # Python dependencies
+
 ```
 
 ---
 
-## ⚙️ Environment Setup
+## 🛠️ Installation & Setup
+
+### 1. Environment
+
+We recommend using **Python 3.10** and **PyTorch 2.7.1**. You can install the dependencies via pip:
 
 ```bash
-conda create -n sea_fgt python=3.9
-conda activate sea_fgt
 pip install -r requirements.txt
+
+```
+
+### 2. Data Preparation
+
+Download the pre-processed datasets from [Google Drive](https://drive.google.com/drive/folders/1RaIJQ8esoWuhyphhmMaH-VCDh-WIluRR). Place the folders (e.g., `PSM`, `SMD`) into the `./datasets/` directory.
+
+---
+
+## 🚀 Getting Started
+
+### Training & Evaluation
+
+To train the model and evaluate it on a specific dataset:
+
+```bash
+python run.py --dataset PSM --exp_name my_experiment --is_training 1
+
+```
+
+### Inference Only
+
+To run inference using a pre-trained checkpoint (ensure `exp_name` matches the training session):
+
+```bash
+python run.py --dataset PSM --exp_name my_experiment --is_training 0
+
+```
+
+### Batch Execution
+
+Alternatively, use the provided shell scripts for one-click execution:
+
+```bash
+sh scripts/run.sh
+
 ```
 
 ---
 
-## 🚀 Training
+## 🙏 Acknowledgements
 
-Example: training SEA-FGT on the **SMD** dataset
+We express our gratitude to the following projects for their contributions to the community:
 
-```bash
-python scripts/train.py \
-  --dataset SMD \
-  --use_cce \
-  --use_sea \
-  --use_fgt \
-  --top_k 2
-```
-
----
-
-## 📊 Evaluation
-
-```bash
-python scripts/eval.py \
-  --dataset SMD \
-  --checkpoint checkpoints/SMD_best.pt
-```
+* [DCdetector](https://github.com/DAMO-DI-ML/KDD2023-DCdetector.git) for providing cleaned versions of the datasets.
+* [RTdetector](https://github.com/CSUFUNLAB/RTdetector.git) and [TAB](https://github.com/decisionintelligence/TAB.git) for their excellent baseline implementations.
 
 ---
 
 ## 📜 Citation
 
+If you find this work useful for your research, please cite:
+
 ```bibtex
-@inproceedings{sea_fgt,
+@inproceedings{sea_fgt2026,
   title={SEA-FGT: Semantic Expert Augmentation with Frequency-Guided Transformer for Multivariate Time-Series Anomaly Detection},
-  author={},
-  booktitle={},
+  author={Your Name and Co-authors},
+  booktitle={Proceedings of [Conference Name]},
   year={2026}
 }
+
 ```
