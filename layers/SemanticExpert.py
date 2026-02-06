@@ -4,7 +4,7 @@
 # @File: SemanticExpert.py.py
 # @SoftWare: PyCharm
 import sys
-from typing import Dict, Any, List
+from typing import Dict, Any
 
 sys.path.append('..')
 sys.path.append('.')
@@ -12,7 +12,6 @@ sys.path.append('.')
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import math
 from abc import ABC, abstractmethod
 
 """

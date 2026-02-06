@@ -12,7 +12,6 @@ class KL_loss(nn.Module):
         super().__init__() 
         self.temperature = temperature 
     def _normalize(self, x: torch.Tensor) -> torch.Tensor: 
-            # 保证是合法分布（DCdetector 也是显式归一化） 
             # x_copy = x.clamp_min(1e-8) 
             # return x_copy / x_copy.sum(dim=-1, keepdim=True) 
             return torch.softmax(x / self.temperature, dim=-1)

@@ -70,52 +70,6 @@ def score_to_label(anomaly_score, threshold):
     anomaly_label = anomaly_label.astype(np.float32)
     return anomaly_label
 
-"""
-def get_npsr_label(true_label, test_score):
-    ones = true_label.sum()
-    zeros = len(true_label) - ones
-
-    sortid = np.argsort(test_score - true_label * 1e-4)
-    new_lab = true_label[sortid]
-    new_scores = test_score[sortid]
-
-
-    TPs = np.cumsum(-new_lab) + ones
-        
-    FPs = np.cumsum(new_lab-1) + zeros
-    FNs = ones - TPs
-    TNs = zeros - FPs
-    
-    N = len(true_label) - np.flip(TPs > 1e-5).argmax()
-    TPRs = TPs[:N] / ones
-    PPVs = TPs[:N] / (TPs + FPs)[:N]
-    FPRs = FPs[:N] / zeros
-    F1s  = 2 * TPRs * PPVs / (TPRs + PPVs)
-    maxid = np.argmax(F1s)
-    
-    FPRs = np.insert(FPRs, -1, 0)
-    TPRs = np.insert(TPRs, -1, 0)
-
-    AUC = roc_auc_score(true_label, test_score)
-   
-    anomaly_ratio = ones / len(true_label) 
-    FPR_bestF1_TPR1 = anomaly_ratio / (1-anomaly_ratio) * (2 / F1s[maxid] - 2)
-    TPR_bestF1_FPR0 = F1s[maxid] / (2 - F1s[maxid])
-
-    thres = new_scores[maxid]
-    pred = (test_score > thres).astype(int)
-    # res = get_all_evaluation_score(pred, true_label)
-    # print(res)
-
-    print('--------')
-    # print({'AUC': AUC, 'F1': F1s[maxid], 'thres': new_scores[maxid], 'TPR': TPRs[maxid], 'PPV': PPVs[maxid], 
-    #         'FPR': FPRs[maxid], 'maxid': maxid, 'FPRs': FPRs, 'TPRs': TPRs, 
-    #         'FPR_bestF1_TPR1': FPR_bestF1_TPR1, 'TPR_bestF1_FPR0': TPR_bestF1_FPR0})
-    print({'AUC': AUC, 'F1': F1s[maxid], 'thres': new_scores[maxid], 'TPR': TPRs[maxid], 'PPV': PPVs[maxid],
-            'FPR_bestF1_TPR1': FPR_bestF1_TPR1, 'TPR_bestF1_FPR0': TPR_bestF1_FPR0})
-
-    return pred
-"""
 def get_npsr_label(true_label, test_score):
     ones = true_label.sum()
     zeros = len(true_label) - ones

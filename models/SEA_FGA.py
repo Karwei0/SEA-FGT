@@ -13,7 +13,6 @@ import torch.nn.functional as F
 
 from typing import Dict, Any, List, Literal
 from layers.CCE import CCE
-from layers.FGA import DualFGA
 from layers.SEA import SEA
 from layers.PositionEmbedding import *
 
@@ -58,15 +57,6 @@ class Model(nn.Module):
                 T=args.T, num_channels=args.num_channels, expert_configs=args.expert_configs, topk=args.topk,
                 temperature=args.temperature,
                 capacity_factor=args.capacity_factor, noise_std=args.noise_std, prob_threshold=args.prob_threshold,
-            )
-
-        if self.use_fga:
-            self.fga = DualFGA(
-                T=args.T, num_channels=args.num_channels,
-                d_model=args.d_model, n_heads=args.n_heads,
-                n_layers=args.n_layers, dropout=args.dropout,
-                ffn_dim=args.ffn_dim, position_embedding=args.position_embedding,
-                stat_mode=args.stat_mode
             )
 
         # save all parameters

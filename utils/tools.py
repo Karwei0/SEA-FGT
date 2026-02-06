@@ -198,20 +198,3 @@ def plot_mat(mat, str_cat='series_2D', str0='tmp', save_folder='./results'):
     write_into_xls(excel_name, mat)
     np.save(os.path.join(save_folder, f'{str_cat}_{str0}-{timestamp}.npy'), mat)
 
-if __name__ == '__main__':
-    # === 填你自己的邮箱信息 ===
-    FROM = "your_email@example.com"
-    TO = "receiver@example.com"
-    PWD = "your_authorization_code"  # 授权码，不是登录密码
-    HOST = "smtp.example.com"
-    PORT = 465
-
-    send_email(
-        subject="测试邮件：send_email()",
-        body="你好，这是来自 tools.py 的自动测试邮件。\n如果你收到这封信，说明函数可用。",
-        to_email=TO,
-        from_email=FROM,
-        password=PWD,
-        mail_host=HOST,
-        mail_port=PORT
-    )

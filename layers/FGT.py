@@ -8,7 +8,6 @@ sys.path.append('..')
 sys.path.append('.')
 
 import math
-from typing import Literal
 
 import torch
 import torch.nn as nn

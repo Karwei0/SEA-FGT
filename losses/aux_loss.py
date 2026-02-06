@@ -4,7 +4,6 @@
 # @File: aux_loss.py
 # @SoftWare: PyCharm
 import sys
-from losses.JSD_loss import JSD_loss
 from losses.KL_loss import *
 from losses.NTXentLoss import NTXentLoss
 from abc import ABC, abstractmethod
@@ -390,82 +389,3 @@ class ContrastiveLossManager(nn.Module):
     def set_loss_weight(self, loss_name: str, weight: float):
         if loss_name in self.loss_functions:
             self.loss_functions[loss_name].weight = weight
-
-
-# 测试代码
-def test_modular_losses():
-    """测试模块化损失函数"""
-    batch_size = 4
-    seq_length = 50
-    d_model = 128
-    num_channels = 8
-    num_experts = 4
-
-    # 创建各个损失函数
-    kl_loss = KL_loss(temperature=0.1)
-    fga_loss = FGAConsistencyLoss(weight=0.1)
-    balance_loss = LoadBalanceLoss(weight=0.1)
-    orth_loss = OrhogonalityLoss(weight=0.1)
-
-    # 创建测试数据
-    y_ori = torch.randn(batch_size, seq_length, d_model)
-    y_aug = torch.randn(batch_size, seq_length, d_model)
-    gate_ori = torch.sigmoid(torch.randn(batch_size, seq_length))
-    gate_aug = torch.sigmoid(torch.randn(batch_size, seq_length))
-    expert_utilization = torch.randint(0, 2, (batch_size, num_channels, num_experts)).float()
-
-    # 创建模拟专家
-    experts = [nn.Linear(10, 10) for _ in range(num_experts)]
-
-    # 测试各个损失函数
-    print("=== 模块化损失函数测试 ===")
-
-    L_KL = kl_loss(y_ori, y_aug)
-    print(f"对称KL损失: {L_KL.item():.6f}")
-
-    L_FGA = fga_loss(gate_ori, gate_aug)
-    print(f"FGA一致性损失: {L_FGA.item():.6f}")
-
-    L_balance = balance_loss(expert_utilization)
-    print(f"负载均衡损失: {L_balance.item():.6f}")
-
-    L_orth = orth_loss(experts)
-    print(f"正交性损失: {L_orth.item():.6f}")
-
-
-    # 测试损失管理器
-    loss_manager = ContrastiveLossManager()
-    loss_dict = loss_manager(y_ori, y_aug, gate_ori, gate_aug, expert_utilization, experts)
-
-    print("\n=== 损失管理器测试 ===")
-    for key, value in loss_dict.items():
-        print(f"{key}: {value.item():.6f}")
-
-    print("测试通过！模块化损失函数工作正常。")
-
-
-def test_loss_extensibility():
-    """测试损失函数的可扩展性"""
-
-    # 可以轻松添加新的损失函数
-    class CustomLoss(BaseAuxLoss):
-        def __init__(self, weight: float = 1.0):
-            super().__init__("custom_loss", weight)
-
-        def forward(self, input1: torch.Tensor, input2: torch.Tensor) -> torch.Tensor:
-            # 自定义损失逻辑
-            return self.weighted_loss(torch.mean((input1 - input2) ** 2))
-
-    # 使用自定义损失
-    custom_loss = CustomLoss(weight=0.5)
-    input1 = torch.randn(4, 10)
-    input2 = torch.randn(4, 10)
-    loss = custom_loss(input1, input2)
-
-    print(f"\n自定义损失: {loss.item():.6f}")
-    print("测试通过！损失函数具有良好的可扩展性。")
-
-
-if __name__ == "__main__":
-    test_modular_losses()
-    test_loss_extensibility()

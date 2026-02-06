@@ -450,30 +450,3 @@ class Exp_Detect(Exp_Basic):
         print("Accuracy_pa : {:0.4f}, Precision_pa : {:0.4f}, Recall_pa : {:0.4f}, F-score_pa : {:0.4f} ".format(accuracy, precision, recall, f_score))
         
         return {'threshold': threshold, 'metrics': metrics}
-    
-"""
-
-        else:
-            if self.args.th_mode == 'percentile_val':
-                best_k, threshold, _ = grid_search_percentile_k(test_scores_1d, test_labels_1d, self.args.th_grid)
-            elif self.args.th_mode in ['percentile_train', 'spot', 'unified']:
-                if self.train_scores_1d is None:
-                    train_data, train_loader = self._get_data(flag='train')
-                    self.train_scores_1d, self.train_labels_1d = self._gather_scores_labels_1d(train_loader, self.args.temperature)
-                if self.args.th_mode == 'percentile_train':
-                    best_k, threshold, _ = grid_search_percentile_k(self.train_scores_1d, self.train_labels_1d, self.args.th_grid)
-                elif self.args.th_mode == 'unified':
-                    unified_scores = np.concatenate([self.train_scores_1d, test_scores_1d])
-                    best_k, threshold, _ = grid_search_percentile_k(
-                        self.val_scores_1d, self.val_labels_1d, self.args.th_grid, unified_scores
-                    )
-                    print('here, ', threshold)
-            thre_po = ThresholdPolicy(mode=self.args.th_mode, k_percent=best_k)
-            thre_po = thre_po.fit(train_scores_1d=self.train_scores_1d, ref_score_1d=test_scores_1d)
-            pred_label_1d = thre_po.predict(test_scores_1d)
-
-        # print('sum of fpred: ', pred_label_1d.sum())
-        # print('sum of fpred: ', test_labels_1d.sum())
-        if test_labels_1d.sum() == 0:
-            test_labels_1d = pred_label_1d
-"""
