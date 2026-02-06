@@ -1,6 +1,3 @@
-Here is the revised English README with the "Main Results" section removed.
-
----
 
 # SEA-FGT: Frequency-Guided Transformer with Semantic Expert Augmentation
 
