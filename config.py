@@ -25,21 +25,6 @@ dataset2channels = {
 }
 
 
-"""
-hidden_channels: int = 32,
-kernel1: int = 3,
-kernel2: int = 5,
-kernel3: int = 7,
-dilation1: int = 1,
-dilation2: int = 3,
-dilation3: int = 5,
-"""
-"""
-one_expert_config = {"type": "conv_mlp", "hidden_channels": 16,
-                    'kernel1': 3,'kernel2': 5, 'kernel3': 7, 
-                    "dilation1": 1, "dilation2": 3, "dilation3": 5,
-                    'mlp_hidden': 128, "dropout": 0.2}
-"""
 
 conv_one_expert_config = {
     "type": "conv",
