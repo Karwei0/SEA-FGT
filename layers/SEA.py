@@ -45,7 +45,7 @@ class SEE(nn.Module):
                     )
                 )
             elif etype == "mlp":
-                # TODO: think about the T and the dim of mlp ??
+                
                 self.experts.append(
                     MLPExpert(
                         T=T,

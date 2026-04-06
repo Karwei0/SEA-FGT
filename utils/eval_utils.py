@@ -89,13 +89,13 @@ def get_npsr_label(true_label, test_score):
     FPRs = FPs[:N] / zeros
     F1s = 2 * TPRs * PPVs / (TPRs + PPVs)
     
-    # 找第二大F1值
-    maxid1 = np.argmax(F1s)  # 第一大的索引
+    # Find the second largest F1 value
+    maxid1 = np.argmax(F1s)  # Index of the largest value
     
-    # 将第一大的值设为负无穷，然后找第二大
+    # Set the largest value to negative infinity, then find the second largest
     F1s_copy = F1s.copy()
     F1s_copy[maxid1] = -np.inf
-    second_maxid = np.argmax(F1s_copy)  # 第二大的索引
+    second_maxid = np.argmax(F1s_copy)  # Index of the second largest value
     
     FPRs = np.insert(FPRs, -1, 0)
     TPRs = np.insert(TPRs, -1, 0)
@@ -103,7 +103,7 @@ def get_npsr_label(true_label, test_score):
     AUC = roc_auc_score(true_label, test_score)
    
     anomaly_ratio = ones / len(true_label) 
-    # 使用第二大F1值计算
+    # 
     FPR_bestF1_TPR1 = anomaly_ratio / (1-anomaly_ratio) * (2 / F1s[second_maxid] - 2)
     TPR_bestF1_FPR0 = F1s[second_maxid] / (2 - F1s[second_maxid])
 
@@ -118,7 +118,7 @@ def get_npsr_label(true_label, test_score):
            'PPV': PPVs[second_maxid],
            'FPR_bestF1_TPR1': FPR_bestF1_TPR1, 
            'TPR_bestF1_FPR0': TPR_bestF1_FPR0,
-           'first_max_F1': F1s[maxid1],  # 可选：显示第一大的F1值作为参考
+           'first_max_F1': F1s[maxid1],  
            'second_max_index': second_maxid})
 
     return pred

@@ -7,19 +7,19 @@ import os
 
 import numpy as np
 from utils.spot import SPOT
-# from src.constants import lm  # 假设 lm = [0.02, 3]
+# from src.constants import lm  # Assume lm = [0.02, 3]
 from sklearn.metrics import precision_recall_fscore_support, roc_auc_score
 from metrics.get_all_evaluation_score import get_all_evaluation_score
 
 class POTThresholdDetector:
     def __init__(self, q=1e-5, level=0.02, scale_factor=3.0):
         """
-        基于极值理论 (SPOT) 的动态阈值检测器
+        Dynamic threshold detector based on Extreme Value Theory (SPOT)
 
         Args:
-            q (float): 风险参数，控制灵敏度 (默认 1e-5)
-            level (float): 初始阈值分位数 (默认 0.02)
-            scale_factor (float): 最终阈值的缩放因子 (默认 3.0)
+            q (float): Risk parameter, controls sensitivity (default 1e-5)
+            level (float): Initial threshold quantile (default 0.02)
+            scale_factor (float): Final threshold scaling factor (default 3.0)
         """
         self.q = q
         self.level = level
@@ -29,13 +29,13 @@ class POTThresholdDetector:
 
     def fit(self, train_scores, test_scores):
         """
-        训练模型并计算动态阈值
+        Train the model and compute dynamic threshold
 
         Args:
-            train_scores (np.ndarray): 训练集异常分数 (用于初始化 SPOT)
-            test_scores (np.ndarray): 测试集异常分数 (用于检测)
+            train_scores (np.ndarray): Training set anomaly scores (for SPOT initialization)
+            test_scores (np.ndarray): Test set anomaly scores (for detection)
         """
-        # 动态调整初始分位数直到成功
+        # Dynamically adjust initial quantile until successful
         current_level = self.level
         while True:
             try:
@@ -44,12 +44,12 @@ class POTThresholdDetector:
                 self.spot.initialize(level=current_level, min_extrema=False, verbose=False)
                 break
             except:
-                current_level *= 0.98  # 逐步降低分位数
+                current_level *= 0.98  # Gradually reduce the quantile
 
-        # 运行 SPOT 获取阈值
+        # Run SPOT to get thresholds
         results = self.spot.run(dynamic=False)
 
-        # 计算最终阈值
+        # Compute final threshold
         if len(results['thresholds']) > 0:
             self.threshold = np.mean(results['thresholds']) * self.scale_factor
         else:
@@ -57,26 +57,26 @@ class POTThresholdDetector:
 
     def predict(self, scores):
         """
-        根据阈值生成预测标签
+        Generate prediction labels based on threshold
 
         Args:
-            scores (np.ndarray): 需要预测的异常分数
+            scores (np.ndarray): Anomaly scores to predict
 
         Returns:
-            np.ndarray: 二值化预测标签 (0/1)
+            np.ndarray: Binarized prediction labels (0/1)
         """
         return (scores > self.threshold).astype(int)
 
     def evaluate(self, scores, labels):
         """
-        评估阈值效果
+        Evaluate threshold effectiveness
 
         Args:
-            scores (np.ndarray): 测试集异常分数
-            labels (np.ndarray): 真实标签 (0/1)
+            scores (np.ndarray): Test set anomaly scores
+            labels (np.ndarray): Ground truth labels (0/1)
 
         Returns:
-            dict: 包含 F1、Precision、Recall、AUC 等指标
+            dict: Dictionary containing F1, Precision, Recall, AUC and other metrics
         """
         pred = self.predict(scores)
         res = get_all_evaluation_score(pred, labels)
@@ -87,4 +87,3 @@ class POTThresholdDetector:
         }
 
         return res, self.threshold
-

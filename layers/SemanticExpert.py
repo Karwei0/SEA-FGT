@@ -14,11 +14,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 from abc import ABC, abstractmethod
 
-"""
- more sophisticated
-"""
-
-
 class SemanticExpert(nn.Module, ABC):
     """abstract sematic epxert network"""
 
@@ -149,7 +144,6 @@ class SimpleConvExpert(SemanticExpert):
             if i < num_layers - 1:
                 conv_layers.append(nn.ReLU())
 
-        # 添加池化
         # self.pool = nn.AdaptiveAvgPool1d(1)
         # self.conv_net = nn.Sequential(*conv_layers)
 

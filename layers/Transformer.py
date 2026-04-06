@@ -26,7 +26,6 @@ class Transformer(nn.Module):
         self.n_heads = n_heads
         self.n_layers = n_layers
 
-        # ✅ Removed: SpectralGate / SEG
 
         # time embedding
         self.temporal_embedding = TemporalEmbedding(T, num_channels, d_model)
@@ -55,7 +54,6 @@ class Transformer(nn.Module):
         """
         B, N, T = x.shape
 
-        # ✅ Removed: spectral gate
         # channel_gate = self.spectral_gate(x)
         # x = x * channel_gate.unsqueeze(-1)
 
@@ -71,7 +69,7 @@ class Transformer(nn.Module):
         for encoder in self.encoder_layers:
             z = encoder(z)
 
-        # projection（保留你原来的写法；不过你现在 return 的是 z）
+        # projection
         h = self.layer_norm(z)
         h = self.output_projection(z)
 

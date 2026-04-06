@@ -101,10 +101,10 @@ class Exp_Detect(Exp_Basic):
     # TODO: make it suitable for own dataloader
     def _get_data(self, flag=None):
         """
-            need a data_provider return dataset, dataloader
-            dataloader 每个 batch 是一个 dict:
-          {'x': [B,T,N], 'y': optional, 'label': optional (0/1 for anomaly)}
-        :param flag: ['train', 'test', 'val'
+        Need a data_provider to return dataset and dataloader
+            Each batch from dataloader is a dict:
+            {'x': [B,T,N], 'y': optional, 'label': optional (0/1 for anomaly)}
+        :param flag: ['train', 'test', 'val']
         :return:
         """
         dataset, loader = get_data_loader(
@@ -122,9 +122,9 @@ class Exp_Detect(Exp_Basic):
 
     def _forward_and_collect(self, batch_x, batch_y=None, **kwargs) -> Dict[str, torch.Tensor]:
         """
-        约定：SEA_FGA.forward() 返回一个 dict，至少包含：
-        y_ori, y_aug, 以及（若启用）gate_ori, gate_aug, expert_utilization, experts
-        可选：anomaly_score
+        Convention: SEA_FGA.forward() returns a dict containing at least:
+        y_ori, y_aug, and (if enabled) gate_ori, gate_aug, expert_utilization, experts
+        Optional: anomaly_score
         :param batch_x:
         :param batch_y:
         :param kwargs:
@@ -140,7 +140,6 @@ class Exp_Detect(Exp_Basic):
 
     def _compute_total_loss(self, out_dict, batch):
         device = self.device 
-        # TODO: check
         # SEA_FGT - OUT :y_ori, y_aug, coherence_matrix, expert_utilization, gate_ori, gate_aug
         if isinstance(out_dict, dict):
             y_ori = out_dict.get('y_ori', None)
@@ -269,33 +268,27 @@ class Exp_Detect(Exp_Basic):
         # load best
         best_path = os.path.join(ckpt_dir, 'checkpoint.pth')
         if os.path.isfile(best_path):
-            # 1) 先安全地在 CPU 上加载，避免 GPU 号不匹配
+            # 1) load to CPU first
             state = torch.load(best_path, map_location='cpu')
 
-            # 2) 取出真正的 state_dict（有的保存成 {'state_dict': ...}）
+            # 2) load state_dict
             if isinstance(state, dict) and 'state_dict' in state:
                 state = state['state_dict']
 
-            # 3) 如是 DataParallel 保存，去掉 'module.' 前缀
+            # 3) remove prefix 'module.' if it is DataParallel
             from collections import OrderedDict
             new_state = OrderedDict()
             for k, v in state.items():
                 new_k = k.replace('module.', '', 1) if k.startswith('module.') else k
                 new_state[new_k] = v
 
-            # 4) 加载到模型（模型此时已在 self.device 上）
+            # 4) load model with state
             missing, unexpected = self.model.load_state_dict(new_state, strict=False)
             if missing or unexpected:
                 print(f'--[WARN] load_state_dict: missing={missing}, unexpected={unexpected}')
             print(next(self.model.parameters()).device)
             print(f'Load best model from {best_path} -> {self.device}')
 
-        """
-        best_path = os.path.join(ckpt_dir, 'checkpoint.pth')
-        if os.path.isfile(best_path):
-            self.model.load_state_dict(torch.load(best_path))
-            print(f'Load best model from {best_path}')
-        """
         if self.args.th_mode in ('percentile_train', 'spot', 'unified'):
             self.train_scores_1d, _ = self._gather_scores_labels_1d(train_loader, self.args.temperature)
 
@@ -384,7 +377,7 @@ class Exp_Detect(Exp_Basic):
             thre_po.fit(train_scores_1d=self.train_scores_1d, ref_score_1d=test_scores_1d)
             pred_label_1d = thre_po.predict(test_scores_1d)
         elif self.args.th_mode == "spot":
-            best_k, threshold, _ = 0, None, None  # spot 自适应，不需要k
+            best_k, threshold, _ = 0, None, None  # spot 
             thre_po = ThresholdPolicy(mode="spot")
             thre_po.fit(train_scores_1d=self.train_scores_1d, ref_score_1d=test_scores_1d)
             pred_label_1d = thre_po.predict(test_scores_1d)

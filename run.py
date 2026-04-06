@@ -219,7 +219,7 @@ if __name__ == '__main__':
         test_result = exp.test(setting=exp_name)
         log_line(f"Testing finished in {time.time() - start_test:.2f}s", logger)
 
-        # 结果打印
+        # print result
         if isinstance(test_result, dict):
             log_line("Final Test Results:", logger)
             for k, v in test_result.items():

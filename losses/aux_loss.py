@@ -335,7 +335,7 @@ class ContrastiveLossManager(nn.Module):
         else:
             self.infonce_loss = None
 
-        # 注册损失函数以便管理
+        # Register loss functions for management
         self.loss_functions = nn.ModuleDict({
             'main_loss': self.main_loss,
             'infonce_loss': self.infonce_loss,
@@ -351,9 +351,9 @@ class ContrastiveLossManager(nn.Module):
                 expert_utilization: torch.Tensor,
                 experts: List[nn.Module]) -> Dict[str, torch.Tensor]:
         """
-        总损失计算
+        Total loss calculation
         """
-        # 计算各项损失
+        # Calculate individual losses
         l_main = self.main_loss(y_ori, y_aug)
 
         if self.infonce_loss is None:
