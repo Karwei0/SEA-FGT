@@ -56,7 +56,7 @@ pip install -r requirements.txt
 
 ### 2. Data Preparation
 
-Download the pre-processed datasets from [Google Drive](https://drive.google.com/drive/folders/1RaIJQ8esoWuhyphhmMaH-VCDh-WIluRR). Place the folders (e.g., `PSM`, `SMD`) into the `./datasets/` directory.
+Download the pre-processed datasets from [Google Drive](https://drive.google.com/drive/folders/1RaIJQ8esoWuhyphhmMaH-VCDh-WIluRR). Place the folders (e.g., `MSL`, `SMAP`) into the `./datasets/` directory.
 
 ---
 
@@ -67,7 +67,7 @@ Download the pre-processed datasets from [Google Drive](https://drive.google.com
 To train the model and evaluate it on a specific dataset:
 
 ```bash
-python run.py --dataset PSM --exp_name my_experiment --is_training 1
+python run.py --dataset MSL --exp_name quick_start --is_training 1
 
 ```
 
@@ -76,7 +76,7 @@ python run.py --dataset PSM --exp_name my_experiment --is_training 1
 To run inference using a pre-trained checkpoint (ensure `exp_name` matches the training session):
 
 ```bash
-python run.py --dataset PSM --exp_name my_experiment --is_training 0
+python run.py --dataset MSL --exp_name my_experiment --is_training 0
 
 ```
 
@@ -96,8 +96,8 @@ sh scripts/run.sh
 We express our gratitude to the following projects for their contributions to the community:
 
 * [DCdetector](https://github.com/DAMO-DI-ML/KDD2023-DCdetector.git) for providing cleaned versions of the datasets.
-* [RTdetector](https://github.com/CSUFUNLAB/RTdetector.git) and [TAB](https://github.com/decisionintelligence/TAB.git) for their excellent baseline implementations.
-
+* [TranAD](https://github.com/imperial-qore/TranAD.git), [RTdetector](https://github.com/CSUFUNLAB/RTdetector.git) and [TAB](https://github.com/decisionintelligence/TAB.git) for their excellent baseline implementations.
+* Also pay homage to these contributors who publish their works online, used in this paper.
 ---
 
 ## 📜 Citation

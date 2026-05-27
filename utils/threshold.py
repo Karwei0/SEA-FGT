@@ -42,7 +42,7 @@ def symmetric_kl_scores(y1, y2, temperature=1.0, dim_feat=-1, norm="softmax"):
     p = prob_normalize(y1, norm, temperature=temperature)
     q = prob_normalize(y2, norm, temperature=temperature)
 
-    return kl_div(p, q) + kl_div(q, p)
+    return kl_div(p, q) - kl_div(q, p)
 
 def unified_threshold(train_scores, test_scores, k=0.1):
     """

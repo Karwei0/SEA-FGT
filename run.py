@@ -67,8 +67,8 @@ if __name__ == '__main__':
 
     # setting for model
     # basic model setting and dataset
-    p.add_argument('--model', type=str, default='SEA_FGT', choices=['SEA_FGT', 'Info_FGT'],help='choose which model to experiment')
-    p.add_argument('--dataset', type=str, default='MSL', choices=['MSL', 'SMD', 'SMAP', 'SWAT', 'PSM'], help='dataset name')
+    p.add_argument('--model', type=str, default='SEA_FGT', choices=['SEA_FGT', 'Info_FGT', 'SEA_FGT_random'], help='choose which model to experiment')
+    p.add_argument('--dataset', type=str, default='MSL', choices=['MSL', 'SMD', 'SMAP', 'SWAT', 'PSM', 'NIPS_TS_CCard', 'paysim'], help='dataset name')
     p.add_argument('--data_path', type=str, default='', help='data path')
     p.add_argument('--flag', type=str, default='train', choices=['train', 'val', 'test'], help='train or test for dataloader')
     p.add_argument('--batch_size', type=int, default=32, help='batch size')
@@ -110,7 +110,8 @@ if __name__ == '__main__':
     p.add_argument('--use_rgta', type=int, default=0, help='whether to use RGTA')
 
     # setting for threshold
-    p.add_argument('--th_mode', type=str, default='percentile_val', choices=['percentile_val', 'percentile_train', 'spot', 'unified'], help='threshold mode')
+    p.add_argument('--th_mode', type=str, default='percentile_val', choices=['percentile_val', 'percentile_train', 'spot', 'unified', 'fixed'], help='threshold mode')
+    p.add_argument('--deltaa', type=float, default=0.0000001, help='threshold delta for percentile_val/train mode')
     p.add_argument('--th_k', type=float, default=5.0, help='threshold k for percentile_val/train mode')
     p.add_argument('--th_grid', type=str, default='')
     p.add_argument('--spot_q', type=float, default=1e-5, help='threshold q for spot mode')
@@ -132,7 +133,7 @@ if __name__ == '__main__':
     if isinstance(args.th_grid, str) and len(args.th_grid) > 0:
         args.th_grid = [float(i) for i in args.th_grid.split(',')]
     else:
-        rag = list(range(1, 101, 5))
+        rag = list(range(1, 101, 1))
         args.th_grid = np.array(rag)
 
     if args.use_cce:    args.use_cce = True
@@ -219,7 +220,7 @@ if __name__ == '__main__':
         test_result = exp.test(setting=exp_name)
         log_line(f"Testing finished in {time.time() - start_test:.2f}s", logger)
 
-        # print result
+        # save results
         if isinstance(test_result, dict):
             log_line("Final Test Results:", logger)
             for k, v in test_result.items():

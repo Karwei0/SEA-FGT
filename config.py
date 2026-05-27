@@ -50,6 +50,10 @@ conv_mlp_one_expert_config = {
     "dilation1": 1, "dilation2": 3, "dilation3": 5,
     'mlp_hidden': 522, "dropout": 0.2
 }
+# expert_configs=[
+#     copy.deepcopy(mlp_one_expert_config) for _ in range(10)
+# ]
+
 expert_configs=[
-    copy.deepcopy(mlp_one_expert_config) for _ in range(10)
+    copy.deepcopy(conv_mlp_one_expert_config) for _ in range(10)
 ]
