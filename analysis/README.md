@@ -39,4 +39,4 @@ The full experimental results corresponding to Table 2 in the main paper are sho
 
 The following figure compares the discrete expert usage with the proposed smoothed load estimator. The left panel shows the normalized expert loads, where the smoothed estimates closely match the true discrete usage. The right panel reports the Pearson correlation across routing instances, which remains consistently high, indicating that the proposed estimator provides a reliable approximation throughout training.
 
-![Approximation comparison](./fig_expert_balance.pdf)
+![Approximation comparison](./fig_expert_balance.png)
