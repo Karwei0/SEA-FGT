@@ -14,7 +14,7 @@ Specifically, we replace SEA with the InfoTS meta-learner, which linearly combin
 
 In the CCE module, the frequency spectrum of each channel is partitioned into bands with a uniform band size of $|\mathcal{B}_b| = 6$. Since the number of channels varies across datasets, the k-sparse setting is adjusted accordingly for each dataset.
 
-> To get more ideal performance, fine tuning the threshold is necessary, which is the biggest throwback for all methods relying on threshold to judge.
+> To get more ideal performance, fine-tuning the threshold is necessary — which is the biggest drawback of current threshold-dependent methods. Perhaps threshold-free approaches are worth considering.
 
 #### 3. Different Semantic Experts Settings
 
