@@ -102,9 +102,6 @@ class Model(nn.Module):
         x_ = x.transpose(2, 1)
         coherence_matrix = None
         smooth_p = None
-        # save the gate entrance for research
-        gate_ori = None
-        gate_aug = None
 
         if self.use_cce:
             x_, coherence_matrix = self.cce(x_) # [B, T, N], [B, N, N]
@@ -113,23 +110,12 @@ class Model(nn.Module):
             x_aug, smooth_p = self.sea(x_)
             x_ori = x_
         else:
-            x_ori = x_
-            x_aug = x_ + torch.randn_like(x_) * 0.001
-            smooth_p = torch.zeros(B, N, self.num_experts, device=device)
+            pass
 
         if self.use_fgt:
             y_ori, y_aug = self.fgt(x_ori, x_aug) # the proj is already in the FGA
-
-            # TODO: get the gate
-            # gate_ori = self.fgt.shared_fga.fg(x_ori)
-            # gate_aug = self.fga.shared_fga.fg(x_aug)
-            # gate_ori, gate_aug = self.fga.get_gate() get fre gate from FGA !!undergoing
         else:
-            # y_ori = self.simp_proj(x_ori.transpose(1, 2)) # []
-            # y_aug = self.simp_proj(x_aug.transpose(1, 2))
-            y_ori, y_aug = self.simp_proj(x_ori, x_aug)
-
-        # TODO: keep the entrance for gate
+            pass
 
         if not self.use_sea:
             return y_ori, y_aug, coherence_matrix, smooth_p, None, None, None

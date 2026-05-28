@@ -76,7 +76,7 @@ python run.py --dataset MSL --exp_name quick_start --is_training 1
 To run inference using a pre-trained checkpoint (ensure `exp_name` matches the training session):
 
 ```bash
-python run.py --dataset MSL --exp_name my_experiment --is_training 0
+python run.py --dataset MSL --exp_name quick_start --is_training 0
 
 ```
 
