@@ -102,23 +102,14 @@ class Model(nn.Module):
         x_ = x.transpose(2, 1)
         coherence_matrix = None
         smooth_p = None
+        
+        x_, coherence_matrix = self.cce(x_) # [B, T, N], [B, N, N]
 
-        if self.use_cce:
-            x_, coherence_matrix = self.cce(x_) # [B, T, N], [B, N, N]
+        x_aug, smooth_p = self.sea(x_)
+        x_ori = x_
 
-        if self.use_sea:
-            x_aug, smooth_p = self.sea(x_)
-            x_ori = x_
-        else:
-            pass
 
-        if self.use_fgt:
-            y_ori, y_aug = self.fgt(x_ori, x_aug) # the proj is already in the FGA
-        else:
-            pass
-
-        if not self.use_sea:
-            return y_ori, y_aug, coherence_matrix, smooth_p, None, None, None
+        y_ori, y_aug = self.fgt(x_ori, x_aug) # the proj is already in the FGA
 
         return y_ori, y_aug, coherence_matrix, smooth_p, None, None, self.sea.get_SE()
 

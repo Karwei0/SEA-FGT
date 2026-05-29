@@ -102,13 +102,6 @@ if __name__ == '__main__':
     p.add_argument('--position_embedding', type=str, default='rotate', help='position embedding type')
     p.add_argument('--stat_mode', type=str, default='avg', choices=['max', 'avg'], help='statistic mode in FGA for collection, default="avg"')
 
-    # setting for ablation
-    p.add_argument('--use_cce', type=int, default=1, help='whether to use CCE')
-    p.add_argument('--use_sea', type=int, default=1, help='whether to use SEA')
-    p.add_argument('--use_fga', type=int, default=0, help='whether to use FGA')
-    p.add_argument('--use_fgt', type=int, default=1, help='whether to use FGT')
-    p.add_argument('--use_rgta', type=int, default=0, help='whether to use RGTA')
-
     # setting for threshold
     p.add_argument('--th_mode', type=str, default='percentile_val', choices=['percentile_val', 'percentile_train', 'spot', 'unified', 'fixed'], help='threshold mode')
     p.add_argument('--deltaa', type=float, default=0.0000001, help='threshold delta for percentile_val/train mode')
