@@ -27,6 +27,7 @@ Beyond traditional point-wise metrics, this framework supports **range-oriented 
 
 ```text
 .
+|—— analysis             # More experiments and settings
 ├── datasets/            # Data loading and pre-processing (PSM, SMD, etc.)
 ├── layers/              # Core components (FGT.py, SEA.py, CCE.py)
 ├── models/              # Full model architecture definitions
@@ -107,6 +108,7 @@ If you find this work useful for your research, please cite:
 ```bibtex
 @inproceedings{sea_fgt2026,
   title={SEA-FGT: Semantic Expert Augmentation with Frequency-Guided Transformer for Multivariate Time-Series Anomaly Detection},
+  doi={10.1145/3770855.3817823},
   author={},
   booktitle={},
   year={2026}
