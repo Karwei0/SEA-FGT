@@ -27,7 +27,7 @@ Beyond traditional point-wise metrics, this framework supports **range-oriented 
 
 ```text
 .
-|—— analysis             # More experiments and settings
+|—— analysis/            # More experiments and settings
 ├── datasets/            # Data loading and pre-processing (PSM, SMD, etc.)
 ├── layers/              # Core components (FGT.py, SEA.py, CCE.py)
 ├── models/              # Full model architecture definitions
