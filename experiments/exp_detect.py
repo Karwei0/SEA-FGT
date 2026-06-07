@@ -35,7 +35,7 @@ from utils.EalryStop import EarlyStop
 from metrics.get_all_evaluation_score import get_all_evaluation_score
 from metrics.get_target_metric import get_target_metric
 
-from utils.eval_utils import get_npsr_label
+from utils.eval_utils import get_npsr_label, get_segs_label
 
 import numpy as np
 torch.autograd.set_detect_anomaly(True)
@@ -168,6 +168,7 @@ class Exp_Detect(Exp_Basic):
     def _gather_scores_labels_1d(self, loader, temperature: float):
         self.model.eval()
         scores_list, labels_list = [], []
+        scores_list_segs = []
         with torch.no_grad():
             for batch in loader:
                 batch_x, batch_y = batch
@@ -181,7 +182,10 @@ class Exp_Detect(Exp_Basic):
                 y2 = out['y_aug']
 
                 s_bt = symmetric_kl_scores(y1, y2, temperature=temperature)
-                scores_list.append(F.softmax(s_bt.reshape(-1).detach(), dim=-1).cpu().numpy())
+                # scores_list.append(F.softmax(s_bt.reshape(-1).detach(), dim=-1).cpu().numpy())
+                s_bt_tmp = s_bt.reshape(-1).detach().cpu().numpy()
+                scores_list.append(s_bt_tmp)
+                scores_list_segs.append(s_bt.detach().cpu().numpy())
 
                 if isinstance(batch_y, torch.Tensor):
                     lab = batch_y.detach().cpu().numpy()
@@ -191,7 +195,8 @@ class Exp_Detect(Exp_Basic):
         # print('scores_1d: ', scores_1d.shape)
         labels_1d = (np.concatenate(labels_list, axis=0).astype(np.int32) if labels_list else None)
         # print('labels_1d: ', labels_1d.shape)
-        return scores_1d, labels_1d
+        scores_list_segs = np.hstack(scores_list_segs)
+        return scores_1d, labels_1d, scores_list_segs
       
 
     def train(self, setting=None):
@@ -251,7 +256,7 @@ class Exp_Detect(Exp_Basic):
                         logg += f' | infoNCE:{lc:.5f}'
                     print(logg)
 
-            self.train_scores_1d, _ = self._gather_scores_labels_1d(train_loader, self.args.temperature)
+            self.train_scores_1d, _, _ = self._gather_scores_labels_1d(train_loader, self.args.temperature)
             #vail
             val_loss, val_metric = self.vali(val_data, val_loader)
             avg_train = np.mean(ep_loss)
@@ -290,7 +295,7 @@ class Exp_Detect(Exp_Basic):
             print(f'Load best model from {best_path} -> {self.device}')
 
         if self.args.th_mode in ('percentile_train', 'spot', 'unified'):
-            self.train_scores_1d, _ = self._gather_scores_labels_1d(train_loader, self.args.temperature)
+            self.train_scores_1d, _, _ = self._gather_scores_labels_1d(train_loader, self.args.temperature)
 
         return self.model
 
@@ -309,8 +314,12 @@ class Exp_Detect(Exp_Basic):
 
         val_loss = float(np.mean(total_loss)) if total_loss else np.inf
 
+        if self.monitor == 'val_loss':
+            self.model.train()
+            return val_loss, 0.0
+
         try:
-            self.val_scores_1d, self.val_labels_1d = self._gather_scores_labels_1d(vali_loader, self.args.temperature)
+            self.val_scores_1d, self.val_labels_1d, _ = self._gather_scores_labels_1d(vali_loader, self.args.temperature)
         except Exception:
             self.val_scores_1d, self.val_labels_1d = None, None
 
@@ -347,11 +356,11 @@ class Exp_Detect(Exp_Basic):
         self.model.eval()
         res_csv = os.path.join(self.folder_path, f'{setting if setting else "test"}_res.csv')
 
-        test_scores_1d, test_labels_1d = self._gather_scores_labels_1d(test_loader, self.args.temperature)
+        test_scores_1d, test_labels_1d, test_score_segs = self._gather_scores_labels_1d(test_loader, self.args.tau)
         
         if getattr(self, 'train_scores_1d', None) is None and self.args.th_mode in ['spot', 'percentile_train', 'unified']:
             train_data, train_loader = self._get_data(flag='train')
-            self.train_scores_1d, self.train_labels_1d = self._gather_scores_labels_1d(train_loader, self.args.temperature)
+            self.train_scores_1d, self.train_labels_1d, _ = self._gather_scores_labels_1d(train_loader, self.args.temperature)
         
         
         best_k, threshold, pred_label_1d = 0, None, None
@@ -386,31 +395,41 @@ class Exp_Detect(Exp_Basic):
             raise ValueError(f"Unknown threshold mode: {self.args.th_mode}")
 
         if test_labels_1d.sum() == 0:
-            print("[WARN] No positive labels in test set, using predicted labels as reference.")
+            print("[WARN] No positive labels in test set, using predicted labels as reference, please check later.")
             test_labels_1d = pred_label_1d
-
-        metrics = get_all_evaluation_score(pred_label_1d, test_labels_1d)
-        metrics = {k: round(v, 5) for k, v in metrics.items()}
+ 
         if self.args.th_mode == 'spot':
             threshold = thre_po.get_shreshold()
-        print(f'[TEST] threshold={threshold:.6f} | best_k={best_k} | metrics={metrics} ')
-        # print(get_npsr_label(test_labels_1d, test_scores_1d))
+
+        
+        metrics = get_all_evaluation_score(pred_label_1d, test_labels_1d)
+        metrics = {k: round(v, 5) for k, v in metrics.items()}
+        print(f'[TEST] Results from thershold once')
+        print(f'threshold={threshold:.6f} | best_k={best_k} | metrics={metrics} ')
+
         npsr_label = get_npsr_label(test_labels_1d, test_scores_1d)
-        print('npsr_label')
-        print(get_all_evaluation_score(npsr_label, test_labels_1d))
+        print('[TEST] Results from max f1 once')
+        metrics = get_all_evaluation_score(pred_label_1d, npsr_label)
+        metrics = {k: round(v, 5) for k, v in metrics.items()}
+        print(metrics)
+
+        pred_label_segs = get_segs_label(test_labels_1d, test_score_segs)
+        metrics = {k: round(v, 5) for k, v in metrics.items()}
+        print(f'[TEST] Results from max f1 each segments')
+        print(metrics)
 
         idx = np.arange(len(test_scores_1d), dtype=np.int64)
         df_d = {
             'index': idx,
             'score': test_scores_1d,
-            'pred_label': pred_label_1d,
+            'pred_label': pred_label_segs,
             'label': test_labels_1d,
         }
         df = pd.DataFrame(df_d)
         df.to_csv(res_csv, index=False)
 
         gt = test_labels_1d
-        pred = pred_label_1d
+        pred = pred_label_segs
         anomaly_state = False
         for i in range(len(gt)):
             if gt[i] == 1 and pred[i] == 1 and not anomaly_state:

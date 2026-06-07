@@ -50,7 +50,7 @@ if __name__ == '__main__':
     p.add_argument('--gpu', type=int, default=2, help='')
     p.add_argument('--use_multi_gpu', action='store_true', default=False, help='whether to use muti gpu')
     p.add_argument('--devices', type=str, default='0,1', help='')
-    p.add_argument('--train_epochs', type=int, default=3, help='training epochs')
+    p.add_argument('--train_epochs', type=int, default=20, help='training epochs')
     p.add_argument('--learning_rate', type=float, default=0.0001, help='learning rate')
     p.add_argument('--use_amp', action='store_true', default=False, help='whether to use amp')
     p.add_argument('--grad_clip', type=int, default=1, help='whether to clip gradient')
@@ -71,7 +71,7 @@ if __name__ == '__main__':
     p.add_argument('--dataset', type=str, default='MSL', choices=['MSL', 'SMD', 'SMAP', 'SWAT', 'PSM', 'NIPS_TS_CCard', 'paysim'], help='dataset name')
     p.add_argument('--data_path', type=str, default='', help='data path')
     p.add_argument('--flag', type=str, default='train', choices=['train', 'val', 'test'], help='train or test for dataloader')
-    p.add_argument('--batch_size', type=int, default=32, help='batch size')
+    p.add_argument('--batch_size', type=int, default=512, help='batch size')
     p.add_argument('--T', type=int, default=96, help='sequence length')
     p.add_argument('--num_channels', type=int, default=0, help='number of channels')
     p.add_argument('--win_size', type=int, default=96, help='window size (equal to T)')
@@ -80,7 +80,7 @@ if __name__ == '__main__':
 
     # CCE setting
     p.add_argument('--bin_size', type=int, default=4, help='bin size for cluster')
-    p.add_argument('--k_sparse', type=int, default=16, help='top k sparse for CCE')
+    p.add_argument('--k_sparse', type=int, default=15, help='top k sparse for CCE')
     p.add_argument('--use_laplacian', action='store_true', default=False, help='whether to use laplacian')
 
     # SEA setting
