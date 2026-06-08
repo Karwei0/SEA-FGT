@@ -401,21 +401,22 @@ class Exp_Detect(Exp_Basic):
         if self.args.th_mode == 'spot':
             threshold = thre_po.get_shreshold()
 
-        
+        print('[TEST] The final Results')
         metrics = get_all_evaluation_score(pred_label_1d, test_labels_1d)
         metrics = {k: round(v, 5) for k, v in metrics.items()}
-        print(f'[TEST] Results from thershold once')
-        print(f'threshold={threshold:.6f} | best_k={best_k} | metrics={metrics} ')
+        print(f'[TEST] Results from thershold of the concated sequence')
+        print(f'threshold={threshold:.6f} | best_k={best_k} | metrics={metrics}')
 
+        print('[TEST] Results from max f1 of the concated sequence')
         npsr_label = get_npsr_label(test_labels_1d, test_scores_1d)
-        print('[TEST] Results from max f1 once')
         metrics = get_all_evaluation_score(pred_label_1d, npsr_label)
         metrics = {k: round(v, 5) for k, v in metrics.items()}
         print(metrics)
 
+        print(f'[TEST] Results from max f1 of each segments')
         pred_label_segs = get_segs_label(test_labels_1d, test_score_segs)
+        metrics = get_all_evaluation_score(pred_label_segs, test_labels_1d)
         metrics = {k: round(v, 5) for k, v in metrics.items()}
-        print(f'[TEST] Results from max f1 each segments')
         print(metrics)
 
         idx = np.arange(len(test_scores_1d), dtype=np.int64)

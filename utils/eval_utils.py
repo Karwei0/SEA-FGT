@@ -79,18 +79,7 @@ def get_npsr_label(true_label, test_score):
     ones = true_label.sum()
     zeros = len(true_label) - ones
 
-    if ones == 0:
-        delta = max(1e-12, np.abs(test_score).max() * 1e-12) if len(test_score) > 0 else 1.0
-        thres = test_score.max() + delta
-        pred = (test_score >= thres).astype(int)
-        return pred
-
-    if zeros == 0:
-        thres = test_score.min()
-        pred = (test_score >= thres).astype(int)
-        return pred
-
-    sortid = np.argsort(test_score - true_label * 1e-2)
+    sortid = np.argsort(test_score - true_label * 1e-8)
     new_lab = true_label[sortid]
     new_scores = test_score[sortid]
 
@@ -100,13 +89,13 @@ def get_npsr_label(true_label, test_score):
     TNs = zeros - FPs
 
     if np.any(TPs > 0):
-        N = len(true_label) - np.flip(TPs > 1e-3).argmax()
+        N = len(true_label) - np.flip(TPs > 0).argmax()
     else:
-        N = 1
+        N = len(true_label)
 
-    TPRs = TPs[:N] / ones
-    PPVs = TPs[:N] / (TPs + FPs)[:N]
-    FPRs = FPs[:N] / zeros
+    TPRs = np.divide(TPs[:N], ones, out=np.ones(N), where=ones!=0)
+    PPVs = np.divide(TPs[:N], TPs[:N] + FPs[:N], out=np.ones(N), where=(TPs[:N] + FPs[:N])!=0)
+    FPRs = np.divide(FPs[:N], zeros, out=np.zeros(N), where=zeros!=0)
     F1s = 2 * TPRs * PPVs / (TPRs + PPVs)
 
     F1s = np.nan_to_num(F1s, nan=0.0)
@@ -125,17 +114,14 @@ def get_npsr_label(true_label, test_score):
     AUC = 0.0
     if ones == 0:
         AUC = 0.5
-        delta = max(1e-12, np.abs(new_scores.max()) * 1e-12) if len(new_scores) > 0 else 1.0
-        thres = new_scores.max() + delta
     elif zeros == 0:
-        AUC = 1.0  
-        thres = new_scores.min()
+        AUC = 1.0 
     else:
         AUC = roc_auc_score(true_label, test_score)
 
     pred = (test_score >= thres).astype(int)
 
-    anomaly_ratio = ones / len(true_label)
+    # anomaly_ratio = ones / len(true_label)
 
     # if anomaly_ratio != 1 and F1s[maxid1] != 0:
     #     FPR_bestF1_TPR1 = anomaly_ratio / (1 - anomaly_ratio) * (2 / F1s[maxid1] - 2)
